@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 import os
 import sys
+from PIL import Image
 
 # Agregar la ruta del proyecto al path si es necesario
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -40,37 +41,32 @@ def main():
     # Sidebar - Navegación
     with st.sidebar:
         # ============================================
-        # LOGO DE LA EMPRESA - VERSIÓN COMPATIBLE
+        # LOGO DE LA EMPRESA
         # ============================================
-        # Buscar el logo en diferentes ubicaciones y formatos
+        # Buscar el logo en diferentes ubicaciones
         logo_paths = [
             "assets/logo.png",
-            "assets/logo.PNG", 
+            "assets/logo.PNG",
             "assets/logo.jpg",
             "assets/logo.jpeg",
-            "assets/logo.webp",
             "logo.png",
             "static/logo.png",
-            "images/logo.png",
-            "../assets/logo.png"
+            "images/logo.png"
         ]
         
         logo_encontrado = None
         for path in logo_paths:
-            full_path = os.path.abspath(path)
-            if os.path.exists(full_path):
-                logo_encontrado = full_path
+            if os.path.exists(path):
+                logo_encontrado = path
                 break
         
         if logo_encontrado:
             try:
-                # 🔴 CORREGIDO: Usar formato compatible con todas las versiones
-                from PIL import Image
                 img = Image.open(logo_encontrado)
-                st.image(img, width=250)  # Ancho fijo en píxeles
+                st.image(img, width=250)
             except Exception as e:
                 st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
-                st.caption(f"⚠️ Error al cargar logo")
+                st.caption("💡 Error al cargar logo")
         else:
             # Fallback: ícono genérico
             st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
@@ -87,9 +83,6 @@ def main():
         )
         
         st.markdown("---")
-        
-        # Mostrar información de la versión (opcional)
-        st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
         
         # Firma
         st.markdown(
