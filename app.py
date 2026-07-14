@@ -40,7 +40,7 @@ def main():
     # Sidebar - Navegación
     with st.sidebar:
         # ============================================
-        # LOGO DE LA EMPRESA - VERSIÓN CORREGIDA
+        # LOGO DE LA EMPRESA - VERSIÓN COMPATIBLE
         # ============================================
         # Buscar el logo en diferentes ubicaciones y formatos
         logo_paths = [
@@ -52,24 +52,25 @@ def main():
             "logo.png",
             "static/logo.png",
             "images/logo.png",
-            "../assets/logo.png"  # En caso de que la app esté en subcarpeta
+            "../assets/logo.png"
         ]
         
         logo_encontrado = None
         for path in logo_paths:
-            # 🔴 CORREGIDO: Usar abspath para resolver rutas correctamente
             full_path = os.path.abspath(path)
             if os.path.exists(full_path):
                 logo_encontrado = full_path
                 break
         
         if logo_encontrado:
-            # 🔴 CORREGIDO: Usar la ruta absoluta
             try:
-                st.image(logo_encontrado, use_container_width=True)
+                # 🔴 CORREGIDO: Usar formato compatible con todas las versiones
+                from PIL import Image
+                img = Image.open(logo_encontrado)
+                st.image(img, width=250)  # Ancho fijo en píxeles
             except Exception as e:
                 st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
-                st.caption(f"⚠️ Error al cargar logo: {e}")
+                st.caption(f"⚠️ Error al cargar logo")
         else:
             # Fallback: ícono genérico
             st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
