@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Streamlit
+.streamlit/
+*.pid
+
+# Credenciales
+credentials.json
+service_account.json
+
+# Archivos temporales
+*.csv
+*.xlsx
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
