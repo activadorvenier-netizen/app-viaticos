@@ -4,12 +4,29 @@ import pandas as pd
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
+import json
 from datetime import datetime
 from modules.config import SHEET_URL, CREDENTIALS_PATHS, BASE_VALUES
 
 def get_sheets_client():
-    """Conecta a Google Sheets"""
+    """Conecta a Google Sheets usando credenciales desde variable de entorno o archivo local"""
     try:
+        # 🔴 NUEVO: Intentar leer credenciales desde variable de entorno (Render)
+        creds_json = os.environ.get('CREDENTIALS')
+        
+        if creds_json:
+            # En Render: usar variable de entorno
+            try:
+                creds_dict = json.loads(creds_json)
+                scope = ['https://spreadsheets.google.com/feeds', 
+                         'https://www.googleapis.com/auth/drive']
+                creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+                client = gspread.authorize(creds)
+                return client, "Conectado (variable de entorno)"
+            except Exception as e:
+                return None, f"Error al leer variable CREDENTIALS: {str(e)}"
+        
+        # Si no hay variable de entorno, buscar archivo local
         creds_path = None
         for path in CREDENTIALS_PATHS:
             if os.path.exists(path):
@@ -17,14 +34,14 @@ def get_sheets_client():
                 break
         
         if not creds_path:
-            return None, "No se encontró credentials.json"
+            return None, "No se encontró credentials.json ni variable CREDENTIALS"
         
         scope = ['https://spreadsheets.google.com/feeds', 
                  'https://www.googleapis.com/auth/drive']
         
         creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
         client = gspread.authorize(creds)
-        return client, "Conectado"
+        return client, "Conectado (archivo local)"
     except Exception as e:
         return None, f"Error: {str(e)}"
 
@@ -192,7 +209,6 @@ def cargar_visitas_guardadas():
     except Exception as e:
         return pd.DataFrame(), f"Error: {str(e)}"
 
-# 🔴 FUNCIONES PARA AJUSTES
 def guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor):
     """Guarda un ajuste en la hoja AJUSTES con fecha"""
     try:
@@ -216,7 +232,7 @@ def guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor):
         
         if not df.empty and mes in df['Mes'].values:
             # Actualizar fila existente
-            idx = df[df['Mes'] == mes].index[0] + 2  # +2 por el header y el 0-index
+            idx = df[df['Mes'] == mes].index[0] + 2
             ws.update(f'B{idx}:F{idx}', [[porcentaje, km_moto, km_auto, km_supervisor, fecha_actual]])
         else:
             # Agregar nueva fila
