@@ -3,6 +3,10 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import os
+import sys
+
+# Agregar la ruta del proyecto al path si es necesario
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Importar módulos
 from modules.config import MESES
@@ -35,14 +39,40 @@ def main():
     
     # Sidebar - Navegación
     with st.sidebar:
-        # 🔴 LOGO DE LA EMPRESA - ANCHO COMPLETO
-        logo_path = "assets/logo.png"
-        if os.path.exists(logo_path):
-            # use_container_width=True hace que ocupe todo el ancho
-            st.image(logo_path, use_container_width=True)
+        # ============================================
+        # LOGO DE LA EMPRESA - VERSIÓN CORREGIDA
+        # ============================================
+        # Buscar el logo en diferentes ubicaciones y formatos
+        logo_paths = [
+            "assets/logo.png",
+            "assets/logo.PNG", 
+            "assets/logo.jpg",
+            "assets/logo.jpeg",
+            "assets/logo.webp",
+            "logo.png",
+            "static/logo.png",
+            "images/logo.png",
+            "../assets/logo.png"  # En caso de que la app esté en subcarpeta
+        ]
+        
+        logo_encontrado = None
+        for path in logo_paths:
+            # 🔴 CORREGIDO: Usar abspath para resolver rutas correctamente
+            full_path = os.path.abspath(path)
+            if os.path.exists(full_path):
+                logo_encontrado = full_path
+                break
+        
+        if logo_encontrado:
+            # 🔴 CORREGIDO: Usar la ruta absoluta
+            try:
+                st.image(logo_encontrado, use_container_width=True)
+            except Exception as e:
+                st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
+                st.caption(f"⚠️ Error al cargar logo: {e}")
         else:
             # Fallback: ícono genérico
-            st.image("https://img.icons8.com/color/96/000000/Logo.png", width=80)
+            st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
             st.caption("💡 Coloca tu logo en: assets/logo.png")
         
         st.markdown("### 💰 Viáticos")
@@ -56,6 +86,9 @@ def main():
         )
         
         st.markdown("---")
+        
+        # Mostrar información de la versión (opcional)
+        st.caption(f"📅 {datetime.now().strftime('%d/%m/%Y %H:%M')}")
         
         # Firma
         st.markdown(
