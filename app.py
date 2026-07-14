@@ -42,7 +42,7 @@ def main():
             st.image(logo_path, use_container_width=True)
         else:
             # Fallback: ícono genérico
-            st.image("https://img.icons8.com/color/96/000000/company.png", width=80)
+            st.image("https://img.icons8.com/color/96/000000/Logo.png", width=80)
             st.caption("💡 Coloca tu logo en: assets/logo.png")
         
         st.markdown("### 💰 Viáticos")
