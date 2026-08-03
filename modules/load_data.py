@@ -158,7 +158,8 @@ def show_load_visits():
                     'Veces Moto': int(row_existente['Veces Moto']) if 'Veces Moto' in row_existente and pd.notna(row_existente['Veces Moto']) else 0,
                     'Veces Auto': int(row_existente['Veces Auto']) if 'Veces Auto' in row_existente and pd.notna(row_existente['Veces Auto']) else 0,
                     'Peajes': int(row_existente['Peajes']) if 'Peajes' in row_existente and pd.notna(row_existente['Peajes']) else 0,
-                    'KM Extras': int(row_existente['KM Extras']) if 'KM Extras' in row_existente and pd.notna(row_existente['KM Extras']) else 0
+                    'KM Extras': int(row_existente['KM Extras']) if 'KM Extras' in row_existente and pd.notna(row_existente['KM Extras']) else 0,
+                    'Comida': int(row_existente['Comida']) if 'Comida' in row_existente and pd.notna(row_existente['Comida']) else 0
                 })
         else:
             visit_data.append({
@@ -167,7 +168,8 @@ def show_load_visits():
                 'Veces Moto': 0,
                 'Veces Auto': 0,
                 'Peajes': 0,
-                'KM Extras': 0
+                'KM Extras': 0,
+                'Comida': 0
             })
     
     df_editable = pd.DataFrame(visit_data)
@@ -185,7 +187,8 @@ def show_load_visits():
             "Veces Moto": st.column_config.NumberColumn("Veces en Moto", min_value=0, max_value=50, step=1),
             "Veces Auto": st.column_config.NumberColumn("Veces en Auto", min_value=0, max_value=50, step=1),
             "Peajes": st.column_config.NumberColumn("Peajes ($)", min_value=0, step=100),
-            "KM Extras": st.column_config.NumberColumn("KM Extras", min_value=0, step=1)
+            "KM Extras": st.column_config.NumberColumn("KM Extras", min_value=0, step=1),
+            "Comida": st.column_config.NumberColumn("Comida ($)", min_value=0, step=100)
         },
         hide_index=True
     )
@@ -224,6 +227,7 @@ def show_load_visits():
                     'Veces Auto': int(row['Veces Auto']),
                     'Peajes': int(row['Peajes']) if pd.notna(row['Peajes']) else 0,
                     'KM Extras': int(row['KM Extras']) if pd.notna(row['KM Extras']) else 0,
+                    'Comida': int(row['Comida']) if pd.notna(row['Comida']) else 0,
                     'Supervisor': supervisor,
                     'KM Supervisor': 0,
                     'Fecha': fecha_actual
@@ -239,6 +243,7 @@ def show_load_visits():
                     'Veces Auto': 0,
                     'Peajes': 0,
                     'KM Extras': 0,
+                    'Comida': 0,
                     'Supervisor': supervisor,
                     'KM Supervisor': int(km_supervisor),
                     'Fecha': fecha_actual
@@ -248,8 +253,8 @@ def show_load_visits():
                 df_nuevos = pd.DataFrame(nuevos)
                 
                 columnas_requeridas = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
-                                      'Veces Auto', 'Peajes', 'KM Extras', 'Supervisor', 
-                                      'KM Supervisor', 'Fecha']
+                                      'Veces Auto', 'Peajes', 'KM Extras', 'Comida',
+                                      'Supervisor', 'KM Supervisor', 'Fecha']
                 for col in columnas_requeridas:
                     if col not in df_nuevos.columns:
                         df_nuevos[col] = ''
@@ -289,13 +294,15 @@ def show_load_visits():
     total_auto = edited_df['Veces Auto'].sum()
     total_peajes = edited_df['Peajes'].sum()
     total_km_extras = edited_df['KM Extras'].sum()
+    total_comida = edited_df['Comida'].sum()
     filas_validas = len(edited_df[
         (edited_df['Veces Moto'] > 0) | 
         (edited_df['Veces Auto'] > 0) | 
-        (edited_df['KM Extras'] > 0)
+        (edited_df['KM Extras'] > 0) |
+        (edited_df['Comida'] > 0)
     ])
     
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     with col1:
         st.metric("Total Localidades", len(edited_df))
     with col2:
@@ -306,5 +313,7 @@ def show_load_visits():
         st.metric("Total Auto", total_auto)
     with col5:
         st.metric("KM Extras", total_km_extras)
+    with col6:
+        st.metric("Comida", f"${total_comida:,.0f}")
     
     st.caption(f"💰 Total Peajes: ${total_peajes:,.0f}")

@@ -2,7 +2,7 @@
 import pandas as pd
 from modules.data_manager import get_km_total_localidad
 
-# 🔴 LISTA DE PROMOTORES QUE USAN PRECIO DE SUPERVISOR
+# LISTA DE PROMOTORES QUE USAN PRECIO DE SUPERVISOR
 PROMOTORES_PRECIO_SUPERVISOR = ['DUGO HERNAN', 'BUFFA GASTON']
 
 def calcular_viaticos(visits_df, km_moto, km_auto, km_supervisor):
@@ -20,18 +20,19 @@ def calcular_viaticos(visits_df, km_moto, km_auto, km_supervisor):
         supervisor = df_promotor['Supervisor'].iloc[0]
         mes = df_promotor['Mes'].iloc[0] if 'Mes' in df_promotor.columns else ''
         
-        # 🔴 DETERMINAR QUÉ PRECIO USAR PARA ESTE PROMOTOR
+        # DETERMINAR QUÉ PRECIO USAR PARA ESTE PROMOTOR
         if promotor.upper() in [p.upper() for p in PROMOTORES_PRECIO_SUPERVISOR]:
             precio_a_usar = km_supervisor
             tipo_precio = "Supervisor"
         else:
-            precio_a_usar = km_moto  # Por defecto usamos el precio de moto
+            precio_a_usar = km_moto
             tipo_precio = "Moto"
         
         km_moto_total = 0
         km_auto_total = 0
         total_peaje = 0
         total_km_extras = 0
+        total_comida = 0  # 🔴 NUEVO
         
         for _, row in df_promotor.iterrows():
             km_total = get_km_total_localidad(row['Localidad'], promotor)
@@ -44,9 +45,12 @@ def calcular_viaticos(visits_df, km_moto, km_auto, km_supervisor):
             
             if 'KM Extras' in row:
                 total_km_extras += row['KM Extras'] if pd.notna(row['KM Extras']) else 0
+            
+            # 🔴 NUEVO: Sumar Comida
+            if 'Comida' in row:
+                total_comida += row['Comida'] if pd.notna(row['Comida']) else 0
         
-        # 🔴 CALCULAR COSTOS USANDO EL PRECIO CORRESPONDIENTE
-        # Para los promotores con precio supervisor, TODOS los km se pagan a precio supervisor
+        # CALCULAR COSTOS USANDO EL PRECIO CORRESPONDIENTE
         if promotor.upper() in [p.upper() for p in PROMOTORES_PRECIO_SUPERVISOR]:
             # Ambos (moto y auto) se pagan a precio supervisor
             costo_moto = km_moto_total * km_supervisor
@@ -56,15 +60,16 @@ def calcular_viaticos(visits_df, km_moto, km_auto, km_supervisor):
             # Precio normal: moto a precio moto, auto a precio auto
             costo_moto = km_moto_total * km_moto
             costo_auto = km_auto_total * km_auto
-            costo_km_extras = total_km_extras * km_moto
+            costo_km_extras = total_km_extras * km_auto  # 🔴 CORREGIDO: usar km_auto en lugar de km_moto
         
-        total_viaticos = costo_moto + costo_auto + costo_km_extras + total_peaje
+        # 🔴 MODIFICADO: Sumar Comida al total
+        total_viaticos = costo_moto + costo_auto + costo_km_extras + total_peaje + total_comida
         
         resultados.append({
             'Supervisor': supervisor,
             'Promotor': promotor,
             'Mes': mes,
-            'Tipo Precio': tipo_precio,  # 🔴 NUEVO: indicar qué precio se usó
+            'Tipo Precio': tipo_precio,
             'KM MOTO': km_moto_total,
             '$ MOTO': costo_moto,
             'KM AUTO': km_auto_total,
@@ -73,6 +78,7 @@ def calcular_viaticos(visits_df, km_moto, km_auto, km_supervisor):
             'KM EXTRAS': total_km_extras,
             '$ KM EXTRAS': costo_km_extras,
             'PEAJE': total_peaje,
+            'COMIDA': total_comida,  # 🔴 NUEVO
             '$ VIATICOS': total_viaticos
         })
     
@@ -104,6 +110,7 @@ def preparar_tabla_para_mostrar(resultados):
     display_df['$ AUTO'] = display_df['$ AUTO'].apply(lambda x: f"${x:,.0f}")
     display_df['$ KM EXTRAS'] = display_df['$ KM EXTRAS'].apply(lambda x: f"${x:,.0f}")
     display_df['PEAJE'] = display_df['PEAJE'].apply(lambda x: f"${x:,.0f}")
+    display_df['COMIDA'] = display_df['COMIDA'].apply(lambda x: f"${x:,.0f}")  # 🔴 NUEVO
     display_df['$ VIATICOS'] = display_df['$ VIATICOS'].apply(lambda x: f"${x:,.0f}")
     
     return display_df

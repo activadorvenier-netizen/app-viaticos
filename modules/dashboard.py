@@ -64,26 +64,23 @@ def show_dashboard():
                 ajuste_actual_mes = float(ajuste_mes['% Ajuste'].iloc[0])
                 existe_ajuste = True
         
-        # 🔴 CORREGIDO: value=None para que inicie vacío
         porcentaje_ajuste = st.number_input(
             "% Ajuste",
             min_value=-100.0,
             max_value=100.0,
-            value=None,  # ← Inicia vacío
+            value=None,
             step=0.5,
             key="porcentaje_ajuste",
             help="Ingresa el porcentaje de ajuste para el mes seleccionado",
-            placeholder="Ej: 2.5"  # Placeholder como referencia
+            placeholder="Ej: 2.5"
         )
         
-        # Si hay un ajuste guardado y el campo está vacío, mostrar el valor guardado como referencia
         if existe_ajuste and porcentaje_ajuste is None:
             st.caption(f"💡 Ajuste actual: {ajuste_actual_mes}%")
         
         if st.button("💾 Guardar Ajuste", key="save_ajuste", use_container_width=True):
             from modules.data_manager import guardar_ajuste
             
-            # Si el campo está vacío, usar el valor actual (0) o el que tenía
             valor_a_guardar = porcentaje_ajuste if porcentaje_ajuste is not None else ajuste_actual_mes
             
             success, msg = guardar_ajuste(mes_ajuste, valor_a_guardar)
@@ -138,7 +135,6 @@ def show_dashboard():
         st.metric("👔 KM Supervisor", f"${km_supervisor_ajuste:.2f}")
     
     with col4:
-        # Mostrar el % de ajuste aplicado
         porcentaje_aplicado = ajuste_actual_mes if existe_ajuste else 0.0
         st.metric(
             "📊 % Ajuste Aplicado",
@@ -307,6 +303,7 @@ def show_dashboard():
             'KM EXTRAS': 'sum',
             '$ KM EXTRAS': 'sum',
             'PEAJE': 'sum',
+            'COMIDA': 'sum',  # 🔴 NUEVO
             '$ VIATICOS': 'sum'
         })
         
@@ -318,6 +315,7 @@ def show_dashboard():
         display_df['$ AUTO'] = display_df['$ AUTO'].apply(lambda x: f"${x:,.0f}")
         display_df['$ KM EXTRAS'] = display_df['$ KM EXTRAS'].apply(lambda x: f"${x:,.0f}")
         display_df['PEAJE'] = display_df['PEAJE'].apply(lambda x: f"${x:,.0f}")
+        display_df['COMIDA'] = display_df['COMIDA'].apply(lambda x: f"${x:,.0f}")  # 🔴 NUEVO
         display_df['$ VIATICOS'] = display_df['$ VIATICOS'].apply(lambda x: f"${x:,.0f}")
         
         altura = min(len(display_df) * 35 + 40, 400)
@@ -329,7 +327,6 @@ def show_dashboard():
             height=altura
         )
         
-        # 🔴 CORREGIDO: Botón de exportación a Excel (ancho completo)
         st.markdown("---")
         excel_promotores = to_excel_single(
             df_consolidado,
@@ -378,8 +375,6 @@ def show_dashboard():
         
         df_export_unificado = df_export_unificado.sort_values('Total $', ascending=False)
         
-        # 🔴 CORREGIDO: Formato contable y centrado
-        # Crear una copia para mostrar con formato
         display_export = df_export_unificado.copy()
         display_export['Total $'] = display_export['Total $'].apply(lambda x: f"${x:,.0f}")
         
@@ -404,7 +399,6 @@ def show_dashboard():
             }
         )
         
-        # Aplicar CSS para centrar las celdas
         st.markdown(
             """
             <style>
@@ -419,7 +413,6 @@ def show_dashboard():
             unsafe_allow_html=True
         )
         
-        # Botón de exportación con el formato original (sin formato para el Excel)
         excel_unificado = to_excel_single(
             df_export_unificado,
             f"resumen_nombre_total_{mes_datos}.xlsx"
@@ -455,6 +448,7 @@ def show_dashboard():
             veces_auto = int(row['Veces Auto']) if pd.notna(row['Veces Auto']) else 0
             peajes = int(row['Peajes']) if pd.notna(row['Peajes']) else 0
             km_extras = int(row['KM Extras']) if pd.notna(row['KM Extras']) else 0
+            comida = int(row['Comida']) if 'Comida' in row and pd.notna(row['Comida']) else 0  # 🔴 NUEVO
             
             km_solo = get_km_solo_localidad(localidad, promotor)
             km_dentro = get_km_dentro_localidad(localidad, promotor)
@@ -463,10 +457,9 @@ def show_dashboard():
             km_moto_total = veces_moto * km_total
             km_auto_total = veces_auto * km_total
             
-            # Usar los valores de KM del mes de datos
             costo_moto = km_moto_total * km_moto_datos
             costo_auto = km_auto_total * km_auto_datos
-            costo_km_extras = km_extras * km_moto_datos
+            costo_km_extras = km_extras * km_auto_datos
             
             detalle.append({
                 'Mes': mes_datos,
@@ -485,7 +478,8 @@ def show_dashboard():
                 'KM Extras': km_extras,
                 'Costo KM Extras': costo_km_extras,
                 'Peajes': peajes,
-                'Total Localidad': costo_moto + costo_auto + costo_km_extras + peajes
+                'Comida': comida,  # 🔴 NUEVO
+                'Total Localidad': costo_moto + costo_auto + costo_km_extras + peajes + comida  # 🔴 MODIFICADO
             })
         
         df_detalle = pd.DataFrame(detalle)
@@ -495,6 +489,7 @@ def show_dashboard():
         display_detalle['Costo Auto'] = display_detalle['Costo Auto'].apply(lambda x: f"${x:,.0f}")
         display_detalle['Costo KM Extras'] = display_detalle['Costo KM Extras'].apply(lambda x: f"${x:,.0f}")
         display_detalle['Peajes'] = display_detalle['Peajes'].apply(lambda x: f"${x:,.0f}")
+        display_detalle['Comida'] = display_detalle['Comida'].apply(lambda x: f"${x:,.0f}")  # 🔴 NUEVO
         display_detalle['Total Localidad'] = display_detalle['Total Localidad'].apply(lambda x: f"${x:,.0f}")
         
         altura = min(len(display_detalle) * 35 + 40, 400)
@@ -521,6 +516,7 @@ def show_dashboard():
                 "KM Extras": "KM Extras",
                 "Costo KM Extras": "Costo KM Extras",
                 "Peajes": "Peajes",
+                "Comida": "Comida",  # 🔴 NUEVO
                 "Total Localidad": "Total Localidad"
             }
         )

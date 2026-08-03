@@ -18,7 +18,7 @@ BASE_VALUES = {
 # Columnas para el DataFrame de visitas
 VISITS_COLUMNS = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
                   'Veces Auto', 'Peajes', 'KM Extras', 'Supervisor', 
-                  'KM Supervisor', 'Fecha']
+                  'KM Supervisor', 'Fecha', 'Comida']
 
 # Buscar credenciales
 CREDENTIALS_PATHS = [

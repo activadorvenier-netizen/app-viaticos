@@ -115,8 +115,9 @@ def cargar_datos_base():
             data['visitas_guardadas'] = pd.DataFrame(records)
         except:
             ws = sheet.add_worksheet("VISITAS_GUARDADAS", rows=1000, cols=20)
+            # 🔴 MODIFICADO: Agregar 'Comida' a los títulos
             titulos = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
-                      'Veces Auto', 'Peajes', 'KM Extras', 'Supervisor', 
+                      'Veces Auto', 'Peajes', 'KM Extras', 'Comida', 'Supervisor', 
                       'KM Supervisor', 'Fecha']
             ws.update([titulos])
             data['visitas_guardadas'] = pd.DataFrame()
@@ -171,8 +172,9 @@ def guardar_visitas_en_sheets(visitas_df):
         except:
             ws = sheet.add_worksheet("VISITAS_GUARDADAS", rows=1000, cols=20)
         
+        # 🔴 MODIFICADO: Agregar 'Comida' a los títulos
         titulos = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
-                  'Veces Auto', 'Peajes', 'KM Extras', 'Supervisor', 
+                  'Veces Auto', 'Peajes', 'KM Extras', 'Comida', 'Supervisor', 
                   'KM Supervisor', 'Fecha']
         
         if not visitas_df.empty:
