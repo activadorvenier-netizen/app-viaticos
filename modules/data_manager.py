@@ -31,7 +31,6 @@ def init_session_state():
     if 'last_update' not in st.session_state:
         st.session_state.last_update = datetime.now().strftime('%d/%m/%Y %H:%M')
     
-    # Variables para ajustes
     if 'ajuste_actual' not in st.session_state:
         st.session_state.ajuste_actual = 0
     if 'ajustes_data' not in st.session_state:
@@ -48,12 +47,10 @@ def cargar_datos_iniciales():
             if not visitas_df.empty:
                 st.session_state.visits = visitas_df
             
-            # Cargar ajustes
             ajustes_df = data.get('ajustes', pd.DataFrame())
             if not ajustes_df.empty:
                 st.session_state.ajustes_data = ajustes_df
                 
-                # Aplicar ajuste del mes actual
                 mes_actual = MESES[datetime.now().month - 1]
                 ajuste_mes = ajustes_df[ajustes_df['Mes'] == mes_actual]
                 if not ajuste_mes.empty:
@@ -79,15 +76,14 @@ def guardar_datos_actuales():
         return False, f"Error: {str(e)}"
 
 def guardar_ajuste(mes, porcentaje):
-    """Guarda un ajuste para un mes específico, calculando sobre el último valor cargado"""
+    """Guarda un ajuste para un mes específico, calculando sobre el último valor cargado.
+    Usa session_state (sin leer de Sheets) para evitar el error 429."""
     try:
-        # Obtener todos los ajustes existentes
-        ajustes_df, _ = cargar_todos_los_ajustes()
+        # Usar los ajustes que YA están en session_state (0 lecturas a Sheets)
+        ajustes_df = st.session_state.ajustes_data.copy()
         
-        # Obtener el índice del mes que estamos ajustando
         idx_mes_actual = MESES.index(mes) if mes in MESES else len(MESES) - 1
         
-        # Buscar el último ajuste cargado ANTES del mes actual
         valor_base_moto = BASE_VALUES['km_moto']
         valor_base_auto = BASE_VALUES['km_auto']
         valor_base_supervisor = BASE_VALUES['km_supervisor']
@@ -106,16 +102,14 @@ def guardar_ajuste(mes, porcentaje):
                         valor_base_supervisor = float(ajuste_anterior['KM Supervisor'].iloc[0])
                     break
         
-        # Calcular nuevos valores aplicando el % sobre el último valor cargado
         km_moto = valor_base_moto * (1 + porcentaje / 100)
         km_auto = valor_base_auto * (1 + porcentaje / 100)
         km_supervisor = valor_base_supervisor * (1 + porcentaje / 100)
         
-        # Guardar en Sheets
+        # Única llamada a Sheets: escribir el ajuste
         success, msg = guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor)
         
         if success:
-            # Actualizar session_state directamente
             mes_actual = MESES[datetime.now().month - 1]
             if mes == mes_actual:
                 st.session_state.km_moto = km_moto
@@ -124,7 +118,6 @@ def guardar_ajuste(mes, porcentaje):
                 st.session_state.ajuste_actual = porcentaje
                 st.session_state.last_update = datetime.now().strftime('%d/%m/%Y %H:%M')
             
-            # Actualizar datos de ajustes en session_state
             if not ajustes_df.empty:
                 ajustes_df = ajustes_df[ajustes_df['Mes'] != mes]
                 nueva_fila = pd.DataFrame([{
@@ -152,18 +145,15 @@ def guardar_ajuste(mes, porcentaje):
         return False, f"Error: {str(e)}"
 
 def get_supervisores():
-    """Obtiene la lista de supervisores desde Tabla KM"""
     if st.session_state.data_base:
         return st.session_state.data_base.get('supervisores', {})
     return {}
 
 def get_promotores(supervisor):
-    """Obtiene los promotores de un supervisor"""
     supervisores = get_supervisores()
     return supervisores.get(supervisor, [])
 
 def get_localidades():
-    """Obtiene la lista de localidades desde Tabla KM"""
     if st.session_state.data_base:
         tabla_km = st.session_state.data_base.get('tabla_km', pd.DataFrame())
         if not tabla_km.empty:
@@ -174,13 +164,11 @@ def get_localidades():
     return []
 
 def get_tabla_km():
-    """Obtiene la tabla de kilómetros"""
     if st.session_state.data_base:
         return st.session_state.data_base.get('tabla_km', pd.DataFrame())
     return pd.DataFrame()
 
 def get_km_total_localidad(localidad, promotor=None):
-    """Obtiene el TOTAL KM de una localidad para un promotor específico"""
     tabla_km = get_tabla_km()
     if tabla_km.empty:
         return 0
@@ -221,7 +209,6 @@ def get_km_total_localidad(localidad, promotor=None):
     return km + km_dentro
 
 def get_km_solo_localidad(localidad, promotor=None):
-    """Obtiene solo el KM de una localidad para un promotor específico"""
     tabla_km = get_tabla_km()
     if tabla_km.empty:
         return 0
@@ -253,7 +240,6 @@ def get_km_solo_localidad(localidad, promotor=None):
     return 0
 
 def get_km_dentro_localidad(localidad, promotor=None):
-    """Obtiene solo el KM DENTRO de una localidad para un promotor específico"""
     tabla_km = get_tabla_km()
     if tabla_km.empty:
         return 0
@@ -285,7 +271,6 @@ def get_km_dentro_localidad(localidad, promotor=None):
     return 0
 
 def get_visits_by_supervisor_mes(supervisor, mes):
-    """Obtiene las visitas de un supervisor en un mes específico"""
     if st.session_state.visits.empty:
         return pd.DataFrame()
     
@@ -304,7 +289,6 @@ def get_visits_by_supervisor_mes(supervisor, mes):
     ]
 
 def update_visits(visits_df):
-    """Actualiza el DataFrame de visitas"""
     st.session_state.visits = visits_df
     success, msg = guardar_datos_actuales()
     return success, msg

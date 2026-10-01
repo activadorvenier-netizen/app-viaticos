@@ -42,8 +42,9 @@ def get_sheets_client():
     except Exception as e:
         return None, f"Error: {str(e)}"
 
+@st.cache_data(ttl=300, show_spinner=False)
 def cargar_datos_base():
-    """Carga los datos base desde Google Sheets"""
+    """Carga los datos base desde Google Sheets (con caché de 5 minutos)"""
     try:
         client, msg = get_sheets_client()
         if not client:
@@ -75,9 +76,8 @@ def cargar_datos_base():
             
         except Exception as e:
             data['tabla_km'] = pd.DataFrame()
-            st.error(f"❌ No se encontró la hoja 'Tabla KM'")
         
-        # 2. Obtener supervisores y promotores
+        # 2. Supervisores y promotores
         supervisores_dict = {}
         
         if not data['tabla_km'].empty:
@@ -132,17 +132,13 @@ def cargar_datos_base():
             mes_actual = MESES[datetime.now().month - 1]
             fecha_actual = datetime.now().strftime('%d/%m/%Y %H:%M')
             ws.append_row([
-                mes_actual,
-                0,
-                BASE_VALUES['km_moto'],
-                BASE_VALUES['km_auto'],
-                BASE_VALUES['km_supervisor'],
+                mes_actual, 0,
+                BASE_VALUES['km_moto'], BASE_VALUES['km_auto'], BASE_VALUES['km_supervisor'],
                 fecha_actual
             ])
             
             data['ajustes'] = pd.DataFrame([{
-                'Mes': mes_actual,
-                '% Ajuste': 0,
+                'Mes': mes_actual, '% Ajuste': 0,
                 'KM Moto': BASE_VALUES['km_moto'],
                 'KM Auto': BASE_VALUES['km_auto'],
                 'KM Supervisor': BASE_VALUES['km_supervisor'],
@@ -264,7 +260,7 @@ def cargar_ajuste_por_mes(mes):
         return None, f"Error: {str(e)}"
 
 def cargar_todos_los_ajustes():
-    """Carga todos los ajustes"""
+    """Carga todos los ajustes (sin caché, solo se usa al iniciar)"""
     try:
         client, msg = get_sheets_client()
         if not client:
