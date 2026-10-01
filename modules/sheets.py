@@ -42,9 +42,8 @@ def get_sheets_client():
     except Exception as e:
         return None, f"Error: {str(e)}"
 
-@st.cache_data(ttl=300, show_spinner=False)
 def cargar_datos_base():
-    """Carga los datos base desde Google Sheets (con caché de 5 minutos)"""
+    """Carga los datos base desde Google Sheets (SIN caché para evitar loops)"""
     try:
         client, msg = get_sheets_client()
         if not client:
@@ -260,7 +259,7 @@ def cargar_ajuste_por_mes(mes):
         return None, f"Error: {str(e)}"
 
 def cargar_todos_los_ajustes():
-    """Carga todos los ajustes (sin caché, solo se usa al iniciar)"""
+    """Carga todos los ajustes (sin caché)"""
     try:
         client, msg = get_sheets_client()
         if not client:
