@@ -11,11 +11,9 @@ from modules.config import SHEET_URL, CREDENTIALS_PATHS, BASE_VALUES
 def get_sheets_client():
     """Conecta a Google Sheets usando credenciales desde variable de entorno o archivo local"""
     try:
-        # 🔴 NUEVO: Intentar leer credenciales desde variable de entorno (Render)
         creds_json = os.environ.get('CREDENTIALS')
         
         if creds_json:
-            # En Render: usar variable de entorno
             try:
                 creds_dict = json.loads(creds_json)
                 scope = ['https://spreadsheets.google.com/feeds', 
@@ -26,7 +24,6 @@ def get_sheets_client():
             except Exception as e:
                 return None, f"Error al leer variable CREDENTIALS: {str(e)}"
         
-        # Si no hay variable de entorno, buscar archivo local
         creds_path = None
         for path in CREDENTIALS_PATHS:
             if os.path.exists(path):
@@ -45,6 +42,7 @@ def get_sheets_client():
     except Exception as e:
         return None, f"Error: {str(e)}"
 
+@st.cache_data(ttl=300)
 def cargar_datos_base():
     """Carga los datos base desde Google Sheets"""
     try:
@@ -78,7 +76,6 @@ def cargar_datos_base():
             
         except Exception as e:
             data['tabla_km'] = pd.DataFrame()
-            st.error(f"❌ No se encontró la hoja 'Tabla KM'")
         
         # 2. Obtener supervisores y promotores
         supervisores_dict = {}
@@ -115,7 +112,6 @@ def cargar_datos_base():
             data['visitas_guardadas'] = pd.DataFrame(records)
         except:
             ws = sheet.add_worksheet("VISITAS_GUARDADAS", rows=1000, cols=20)
-            # 🔴 MODIFICADO: Agregar 'Comida' a los títulos
             titulos = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
                       'Veces Auto', 'Peajes', 'KM Extras', 'Comida', 'Supervisor', 
                       'KM Supervisor', 'Fecha']
@@ -172,7 +168,6 @@ def guardar_visitas_en_sheets(visitas_df):
         except:
             ws = sheet.add_worksheet("VISITAS_GUARDADAS", rows=1000, cols=20)
         
-        # 🔴 MODIFICADO: Agregar 'Comida' a los títulos
         titulos = ['Mes', 'Promotor', 'Localidad', 'Veces Moto', 
                   'Veces Auto', 'Peajes', 'KM Extras', 'Comida', 'Supervisor', 
                   'KM Supervisor', 'Fecha']
@@ -192,6 +187,7 @@ def guardar_visitas_en_sheets(visitas_df):
     except Exception as e:
         return False, f"Error al guardar: {str(e)}"
 
+@st.cache_data(ttl=300)
 def cargar_visitas_guardadas():
     """Carga las visitas guardadas desde Sheets"""
     try:
@@ -228,22 +224,20 @@ def guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor):
             titulos = ['Mes', '% Ajuste', 'KM Moto', 'KM Auto', 'KM Supervisor', 'Fecha Ajuste']
             ws.update([titulos])
         
-        # Buscar si ya existe el mes
         registros = ws.get_all_records()
         df = pd.DataFrame(registros)
         
         if not df.empty and mes in df['Mes'].values:
-            # Actualizar fila existente
             idx = df[df['Mes'] == mes].index[0] + 2
             ws.update(f'B{idx}:F{idx}', [[porcentaje, km_moto, km_auto, km_supervisor, fecha_actual]])
         else:
-            # Agregar nueva fila
             ws.append_row([mes, porcentaje, km_moto, km_auto, km_supervisor, fecha_actual])
         
         return True, f"✅ Ajuste para {mes} guardado correctamente"
     except Exception as e:
         return False, f"Error: {str(e)}"
 
+@st.cache_data(ttl=300)
 def cargar_ajuste_por_mes(mes):
     """Carga el ajuste de un mes específico"""
     try:
@@ -271,6 +265,7 @@ def cargar_ajuste_por_mes(mes):
     except Exception as e:
         return None, f"Error: {str(e)}"
 
+@st.cache_data(ttl=300)
 def cargar_todos_los_ajustes():
     """Carga todos los ajustes"""
     try:

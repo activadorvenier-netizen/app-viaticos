@@ -81,7 +81,7 @@ def guardar_datos_actuales():
 def guardar_ajuste(mes, porcentaje):
     """Guarda un ajuste para un mes específico, calculando sobre el último valor cargado"""
     try:
-        # Obtener todos los ajustes existentes
+        # Obtener todos los ajustes existentes (usa caché)
         ajustes_df, _ = cargar_todos_los_ajustes()
         
         # Obtener el índice del mes que estamos ajustando
@@ -93,13 +93,11 @@ def guardar_ajuste(mes, porcentaje):
         valor_base_supervisor = BASE_VALUES['km_supervisor']
         
         if not ajustes_df.empty:
-            # Buscar el mes anterior más cercano que tenga ajuste cargado
             for i in range(idx_mes_actual - 1, -1, -1):
                 mes_anterior = MESES[i]
                 ajuste_anterior = ajustes_df[ajustes_df['Mes'] == mes_anterior]
                 
                 if not ajuste_anterior.empty:
-                    # Usar los valores del mes anterior como base
                     if 'KM Moto' in ajuste_anterior.columns:
                         valor_base_moto = float(ajuste_anterior['KM Moto'].iloc[0])
                     if 'KM Auto' in ajuste_anterior.columns:
@@ -117,6 +115,9 @@ def guardar_ajuste(mes, porcentaje):
         success, msg = guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor)
         
         if success:
+            # Limpiar caché para que la próxima lectura traiga datos actualizados
+            st.cache_data.clear()
+            
             # Actualizar session_state SOLO si es el mes actual
             mes_actual = MESES[datetime.now().month - 1]
             if mes == mes_actual:
@@ -126,9 +127,18 @@ def guardar_ajuste(mes, porcentaje):
                 st.session_state.ajuste_actual = porcentaje
                 st.session_state.last_update = datetime.now().strftime('%d/%m/%Y %H:%M')
             
-            # Actualizar datos de ajustes
-            ajustes_df, _ = cargar_todos_los_ajustes()
+            # Actualizar datos de ajustes en session_state (sin llamar a Sheets)
             if not ajustes_df.empty:
+                ajustes_df = ajustes_df[ajustes_df['Mes'] != mes]
+                nueva_fila = pd.DataFrame([{
+                    'Mes': mes,
+                    '% Ajuste': porcentaje,
+                    'KM Moto': km_moto,
+                    'KM Auto': km_auto,
+                    'KM Supervisor': km_supervisor,
+                    'Fecha Ajuste': datetime.now().strftime('%d/%m/%Y %H:%M')
+                }])
+                ajustes_df = pd.concat([ajustes_df, nueva_fila], ignore_index=True)
                 st.session_state.ajustes_data = ajustes_df
         
         return success, msg
