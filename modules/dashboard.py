@@ -85,10 +85,15 @@ def show_dashboard():
             
             success, msg = guardar_ajuste(mes_ajuste, valor_a_guardar)
             if success:
-                st.success(f"✅ Ajuste de {valor_a_guardar}% aplicado para {mes_ajuste}")
-                # 🔴 CORREGIDO: Se eliminó st.rerun() para evitar loop infinito
+                st.session_state.mensaje_ajuste = f"✅ Ajuste de {valor_a_guardar}% aplicado para {mes_ajuste}"
+                st.rerun()
             else:
                 st.error(f"❌ Error: {msg}")
+        
+        # Mostrar mensaje si existe (después del rerun)
+        if 'mensaje_ajuste' in st.session_state and st.session_state.mensaje_ajuste:
+            st.success(st.session_state.mensaje_ajuste)
+            st.session_state.mensaje_ajuste = None
     
     with col3:
         st.markdown("**📅 Última actualización**")
