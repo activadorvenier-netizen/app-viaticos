@@ -42,7 +42,6 @@ def get_sheets_client():
     except Exception as e:
         return None, f"Error: {str(e)}"
 
-@st.cache_data(ttl=300)
 def cargar_datos_base():
     """Carga los datos base desde Google Sheets"""
     try:
@@ -76,6 +75,7 @@ def cargar_datos_base():
             
         except Exception as e:
             data['tabla_km'] = pd.DataFrame()
+            st.error(f"❌ No se encontró la hoja 'Tabla KM'")
         
         # 2. Obtener supervisores y promotores
         supervisores_dict = {}
@@ -187,7 +187,6 @@ def guardar_visitas_en_sheets(visitas_df):
     except Exception as e:
         return False, f"Error al guardar: {str(e)}"
 
-@st.cache_data(ttl=300)
 def cargar_visitas_guardadas():
     """Carga las visitas guardadas desde Sheets"""
     try:
@@ -237,7 +236,6 @@ def guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor):
     except Exception as e:
         return False, f"Error: {str(e)}"
 
-@st.cache_data(ttl=300)
 def cargar_ajuste_por_mes(mes):
     """Carga el ajuste de un mes específico"""
     try:
@@ -265,7 +263,6 @@ def cargar_ajuste_por_mes(mes):
     except Exception as e:
         return None, f"Error: {str(e)}"
 
-@st.cache_data(ttl=300)
 def cargar_todos_los_ajustes():
     """Carga todos los ajustes"""
     try:

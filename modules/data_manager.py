@@ -81,7 +81,7 @@ def guardar_datos_actuales():
 def guardar_ajuste(mes, porcentaje):
     """Guarda un ajuste para un mes específico, calculando sobre el último valor cargado"""
     try:
-        # Obtener todos los ajustes existentes (usa caché)
+        # Obtener todos los ajustes existentes
         ajustes_df, _ = cargar_todos_los_ajustes()
         
         # Obtener el índice del mes que estamos ajustando
@@ -115,10 +115,7 @@ def guardar_ajuste(mes, porcentaje):
         success, msg = guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor)
         
         if success:
-            # Limpiar caché para que la próxima lectura traiga datos actualizados
-            st.cache_data.clear()
-            
-            # Actualizar session_state SOLO si es el mes actual
+            # Actualizar session_state directamente
             mes_actual = MESES[datetime.now().month - 1]
             if mes == mes_actual:
                 st.session_state.km_moto = km_moto
@@ -127,7 +124,7 @@ def guardar_ajuste(mes, porcentaje):
                 st.session_state.ajuste_actual = porcentaje
                 st.session_state.last_update = datetime.now().strftime('%d/%m/%Y %H:%M')
             
-            # Actualizar datos de ajustes en session_state (sin llamar a Sheets)
+            # Actualizar datos de ajustes en session_state
             if not ajustes_df.empty:
                 ajustes_df = ajustes_df[ajustes_df['Mes'] != mes]
                 nueva_fila = pd.DataFrame([{
@@ -140,6 +137,15 @@ def guardar_ajuste(mes, porcentaje):
                 }])
                 ajustes_df = pd.concat([ajustes_df, nueva_fila], ignore_index=True)
                 st.session_state.ajustes_data = ajustes_df
+            else:
+                st.session_state.ajustes_data = pd.DataFrame([{
+                    'Mes': mes,
+                    '% Ajuste': porcentaje,
+                    'KM Moto': km_moto,
+                    'KM Auto': km_auto,
+                    'KM Supervisor': km_supervisor,
+                    'Fecha Ajuste': datetime.now().strftime('%d/%m/%Y %H:%M')
+                }])
         
         return success, msg
     except Exception as e:
