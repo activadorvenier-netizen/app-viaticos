@@ -86,7 +86,7 @@ def show_dashboard():
             success, msg = guardar_ajuste(mes_ajuste, valor_a_guardar)
             if success:
                 st.success(f"✅ Ajuste de {valor_a_guardar}% aplicado para {mes_ajuste}")
-                st.rerun()
+                # 🔴 CORREGIDO: Se eliminó st.rerun() para evitar loop infinito
             else:
                 st.error(f"❌ Error: {msg}")
     
@@ -303,7 +303,7 @@ def show_dashboard():
             'KM EXTRAS': 'sum',
             '$ KM EXTRAS': 'sum',
             'PEAJE': 'sum',
-            'COMIDA': 'sum',  # 🔴 NUEVO
+            'COMIDA': 'sum',
             '$ VIATICOS': 'sum'
         })
         
@@ -315,7 +315,7 @@ def show_dashboard():
         display_df['$ AUTO'] = display_df['$ AUTO'].apply(lambda x: f"${x:,.0f}")
         display_df['$ KM EXTRAS'] = display_df['$ KM EXTRAS'].apply(lambda x: f"${x:,.0f}")
         display_df['PEAJE'] = display_df['PEAJE'].apply(lambda x: f"${x:,.0f}")
-        display_df['COMIDA'] = display_df['COMIDA'].apply(lambda x: f"${x:,.0f}")  # 🔴 NUEVO
+        display_df['COMIDA'] = display_df['COMIDA'].apply(lambda x: f"${x:,.0f}")
         display_df['$ VIATICOS'] = display_df['$ VIATICOS'].apply(lambda x: f"${x:,.0f}")
         
         altura = min(len(display_df) * 35 + 40, 400)
@@ -448,7 +448,7 @@ def show_dashboard():
             veces_auto = int(row['Veces Auto']) if pd.notna(row['Veces Auto']) else 0
             peajes = int(row['Peajes']) if pd.notna(row['Peajes']) else 0
             km_extras = int(row['KM Extras']) if pd.notna(row['KM Extras']) else 0
-            comida = int(row['Comida']) if 'Comida' in row and pd.notna(row['Comida']) else 0  # 🔴 NUEVO
+            comida = int(row['Comida']) if 'Comida' in row and pd.notna(row['Comida']) else 0
             
             km_solo = get_km_solo_localidad(localidad, promotor)
             km_dentro = get_km_dentro_localidad(localidad, promotor)
@@ -478,8 +478,8 @@ def show_dashboard():
                 'KM Extras': km_extras,
                 'Costo KM Extras': costo_km_extras,
                 'Peajes': peajes,
-                'Comida': comida,  # 🔴 NUEVO
-                'Total Localidad': costo_moto + costo_auto + costo_km_extras + peajes + comida  # 🔴 MODIFICADO
+                'Comida': comida,
+                'Total Localidad': costo_moto + costo_auto + costo_km_extras + peajes + comida
             })
         
         df_detalle = pd.DataFrame(detalle)
@@ -489,7 +489,7 @@ def show_dashboard():
         display_detalle['Costo Auto'] = display_detalle['Costo Auto'].apply(lambda x: f"${x:,.0f}")
         display_detalle['Costo KM Extras'] = display_detalle['Costo KM Extras'].apply(lambda x: f"${x:,.0f}")
         display_detalle['Peajes'] = display_detalle['Peajes'].apply(lambda x: f"${x:,.0f}")
-        display_detalle['Comida'] = display_detalle['Comida'].apply(lambda x: f"${x:,.0f}")  # 🔴 NUEVO
+        display_detalle['Comida'] = display_detalle['Comida'].apply(lambda x: f"${x:,.0f}")
         display_detalle['Total Localidad'] = display_detalle['Total Localidad'].apply(lambda x: f"${x:,.0f}")
         
         altura = min(len(display_detalle) * 35 + 40, 400)
@@ -516,7 +516,7 @@ def show_dashboard():
                 "KM Extras": "KM Extras",
                 "Costo KM Extras": "Costo KM Extras",
                 "Peajes": "Peajes",
-                "Comida": "Comida",  # 🔴 NUEVO
+                "Comida": "Comida",
                 "Total Localidad": "Total Localidad"
             }
         )
