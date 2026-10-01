@@ -79,12 +79,39 @@ def guardar_datos_actuales():
         return False, f"Error: {str(e)}"
 
 def guardar_ajuste(mes, porcentaje):
-    """Guarda un ajuste para un mes específico y actualiza los valores"""
+    """Guarda un ajuste para un mes específico, calculando sobre el último valor cargado"""
     try:
-        # Calcular nuevos valores basados en los valores BASE
-        km_moto = BASE_VALUES['km_moto'] * (1 + porcentaje / 100)
-        km_auto = BASE_VALUES['km_auto'] * (1 + porcentaje / 100)
-        km_supervisor = BASE_VALUES['km_supervisor'] * (1 + porcentaje / 100)
+        # Obtener todos los ajustes existentes
+        ajustes_df, _ = cargar_todos_los_ajustes()
+        
+        # Obtener el índice del mes que estamos ajustando
+        idx_mes_actual = MESES.index(mes) if mes in MESES else len(MESES) - 1
+        
+        # Buscar el último ajuste cargado ANTES del mes actual
+        valor_base_moto = BASE_VALUES['km_moto']
+        valor_base_auto = BASE_VALUES['km_auto']
+        valor_base_supervisor = BASE_VALUES['km_supervisor']
+        
+        if not ajustes_df.empty:
+            # Buscar el mes anterior más cercano que tenga ajuste cargado
+            for i in range(idx_mes_actual - 1, -1, -1):
+                mes_anterior = MESES[i]
+                ajuste_anterior = ajustes_df[ajustes_df['Mes'] == mes_anterior]
+                
+                if not ajuste_anterior.empty:
+                    # Usar los valores del mes anterior como base
+                    if 'KM Moto' in ajuste_anterior.columns:
+                        valor_base_moto = float(ajuste_anterior['KM Moto'].iloc[0])
+                    if 'KM Auto' in ajuste_anterior.columns:
+                        valor_base_auto = float(ajuste_anterior['KM Auto'].iloc[0])
+                    if 'KM Supervisor' in ajuste_anterior.columns:
+                        valor_base_supervisor = float(ajuste_anterior['KM Supervisor'].iloc[0])
+                    break
+        
+        # Calcular nuevos valores aplicando el % sobre el último valor cargado
+        km_moto = valor_base_moto * (1 + porcentaje / 100)
+        km_auto = valor_base_auto * (1 + porcentaje / 100)
+        km_supervisor = valor_base_supervisor * (1 + porcentaje / 100)
         
         # Guardar en Sheets
         success, msg = guardar_ajuste_en_sheets(mes, porcentaje, km_moto, km_auto, km_supervisor)
