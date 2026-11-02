@@ -1,0 +1,341 @@
+{
+  "values": {
+    "KM_MOTO": 188,
+    "KM_AUTO": 531,
+    "LAST_UPDATE": "2026-07-11 09:56:54"
+  },
+  "locations": {
+    "ACEBAL": {
+      "km": 170,
+      "km_dentro": 0
+    },
+    "ALCORTA": {
+      "km": 152,
+      "km_dentro": 0
+    },
+    "ALVAREZ": {
+      "km": 111,
+      "km_dentro": 0
+    },
+    "AMENABAR": {
+      "km": 65,
+      "km_dentro": 0
+    },
+    "AREQUITO": {
+      "km": 62,
+      "km_dentro": 0
+    },
+    "ARMINDA": {
+      "km": 16,
+      "km_dentro": 0
+    },
+    "ARMSTRONG": {
+      "km": 44,
+      "km_dentro": 0
+    },
+    "ARTEAGA": {
+      "km": 125,
+      "km_dentro": 0
+    },
+    "BERABEVU": {
+      "km": 80,
+      "km_dentro": 0
+    },
+    "BIGAND": {
+      "km": 104,
+      "km_dentro": 0
+    },
+    "BOMBAL": {
+      "km": 52,
+      "km_dentro": 0
+    },
+    "CA\u00d1ADA DE GOMEZ": {
+      "km": 122,
+      "km_dentro": 16
+    },
+    "CA\u00d1ADA DEL UCLE": {
+      "km": 30,
+      "km_dentro": 0
+    },
+    "CA\u00d1ADA ROSQUIN": {
+      "km": 78,
+      "km_dentro": 0
+    },
+    "CARCARA\u00d1A": {
+      "km": 70,
+      "km_dentro": 15
+    },
+    "CARLOS PELLEGRINI": {
+      "km": 43,
+      "km_dentro": 0
+    },
+    "CARMEN": {
+      "km": 30,
+      "km_dentro": 0
+    },
+    "CARMEN DEL SAUCE": {
+      "km": 6,
+      "km_dentro": 0
+    },
+    "CARRERAS": {
+      "km": 26,
+      "km_dentro": 0
+    },
+    "CASAS": {
+      "km": 23,
+      "km_dentro": 0
+    },
+    "CASILDA": {
+      "km": 0,
+      "km_dentro": 0
+    },
+    "CENTENO": {
+      "km": 20,
+      "km_dentro": 0
+    },
+    "CHABAS": {
+      "km": 60,
+      "km_dentro": 0
+    },
+    "CHAPUY": {
+      "km": 58,
+      "km_dentro": 0
+    },
+    "CHOVET": {
+      "km": 108,
+      "km_dentro": 0
+    },
+    "CLASON": {
+      "km": 26,
+      "km_dentro": 0
+    },
+    "CORONEL ARNOLD": {
+      "km": 27,
+      "km_dentro": 0
+    },
+    "CORREA": {
+      "km": 35,
+      "km_dentro": 0
+    },
+    "DIEGO DE ALVEAR": {
+      "km": 120,
+      "km_dentro": 0
+    },
+    "EL TREBOL": {
+      "km": 72,
+      "km_dentro": 0
+    },
+    "ELORTONDO": {
+      "km": 90,
+      "km_dentro": 0
+    },
+    "FIRMAT": {
+      "km": 116,
+      "km_dentro": 15
+    },
+    "FUENTES": {
+      "km": 35,
+      "km_dentro": 0
+    },
+    "GODEKEN": {
+      "km": 17,
+      "km_dentro": 0
+    },
+    "HUGHES": {
+      "km": 132,
+      "km_dentro": 0
+    },
+    "JUNCAL": {
+      "km": 32,
+      "km_dentro": 0
+    },
+    "LABORDEBOY": {
+      "km": 35,
+      "km_dentro": 0
+    },
+    "LANDETA": {
+      "km": 76,
+      "km_dentro": 0
+    },
+    "LAS PAREJAS": {
+      "km": 55,
+      "km_dentro": 0
+    },
+    "LAS PETACAS": {
+      "km": 60,
+      "km_dentro": 0
+    },
+    "LAS ROSAS": {
+      "km": 0,
+      "km_dentro": 0
+    },
+    "LOS CARDOS": {
+      "km": 38,
+      "km_dentro": 0
+    },
+    "LOS MOLINOS": {
+      "km": 34,
+      "km_dentro": 0
+    },
+    "LOS QUIRQUINCHOS": {
+      "km": 24,
+      "km_dentro": 0
+    },
+    "MARIA SUSANA": {
+      "km": 43,
+      "km_dentro": 0
+    },
+    "MARIA TERESA": {
+      "km": 92,
+      "km_dentro": 0
+    },
+    "MAXIMO PAZ": {
+      "km": 170,
+      "km_dentro": 0
+    },
+    "MELINCUE": {
+      "km": 45,
+      "km_dentro": 0
+    },
+    "MONTES DE OCA": {
+      "km": 78,
+      "km_dentro": 0
+    },
+    "MURPHY": {
+      "km": 20,
+      "km_dentro": 0
+    },
+    "PEREZ": {
+      "km": 80,
+      "km_dentro": 0
+    },
+    "PIAMONTE": {
+      "km": 53,
+      "km_dentro": 0
+    },
+    "PUEBLO MU\u00d1OZ": {
+      "km": 26,
+      "km_dentro": 0
+    },
+    "PUJATO": {
+      "km": 26,
+      "km_dentro": 0
+    },
+    "RUFINO": {
+      "km": 0,
+      "km_dentro": 0
+    },
+    "SAN GENARO": {
+      "km": 60,
+      "km_dentro": 0
+    },
+    "SAN GENARO NORTE": {
+      "km": 3,
+      "km_dentro": 0
+    },
+    "SAN GERONIMO": {
+      "km": 1,
+      "km_dentro": 0
+    },
+    "SAN GREGORIO": {
+      "km": 22,
+      "km_dentro": 0
+    },
+    "SAN JERONIMO SUR": {
+      "km": 50,
+      "km_dentro": 0
+    },
+    "SAN JORGE": {
+      "km": 0,
+      "km_dentro": 0
+    },
+    "SAN JOSE DE LA ESQUINA": {
+      "km": 48,
+      "km_dentro": 0
+    },
+    "SANCTI SPIRITU": {
+      "km": 48,
+      "km_dentro": 0
+    },
+    "SANFORD": {
+      "km": 34,
+      "km_dentro": 0
+    },
+    "SANTA ISABEL": {
+      "km": 26,
+      "km_dentro": 0
+    },
+    "SOLDINI": {
+      "km": 90,
+      "km_dentro": 0
+    },
+    "TEODELINA": {
+      "km": 148,
+      "km_dentro": 0
+    },
+    "TORTUGAS": {
+      "km": 86,
+      "km_dentro": 0
+    },
+    "VENADO TUERTO": {
+      "km": 0,
+      "km_dentro": 0
+    },
+    "VILLA CA\u00d1AS": {
+      "km": 100,
+      "km_dentro": 0
+    },
+    "VILLA ELOISA": {
+      "km": 62,
+      "km_dentro": 0
+    },
+    "VILLA MUGUETA": {
+      "km": 73,
+      "km_dentro": 0
+    },
+    "VILLADA": {
+      "km": 27,
+      "km_dentro": 0
+    },
+    "WHEELWRIGHT": {
+      "km": 27,
+      "km_dentro": 0
+    },
+    "ZAVALLA": {
+      "km": 56,
+      "km_dentro": 0
+    },
+    "CUATRO ESQUINAS": {
+      "km": 0,
+      "km_dentro": 0
+    }
+  },
+  "supervisors": {
+    "DEL POPOLO": [
+      "DUGO HERNAN",
+      "MOLINA LUCAS",
+      "FARINA HUGO",
+      "PAREDES NICOLAS",
+      "BESSONE MAURO",
+      "BUFFA GASTON",
+      "GUTIERREZ MAURO"
+    ],
+    "VIVANI": [
+      "VEGA ALEXANDRO",
+      "ALAGI FRANCO",
+      "CARDONI MAURICIO",
+      "MARTINEZ GABRIEL",
+      "PARIANI AGUSTIN",
+      "MACEDA SILVIA"
+    ],
+    "RAPOSO": [
+      "NAZABAL DIEGO",
+      "OTEGUI DARIO",
+      "GARCIA ALEJANDRA",
+      "CAMPOS ELIAS",
+      "SCALABRONI ML",
+      "DIAZ EMANUEL",
+      "FERNANDEZ JOSE"
+    ]
+  }
+}
